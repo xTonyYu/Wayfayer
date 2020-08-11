@@ -31,23 +31,13 @@ def about(request):
 def login_page(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
+        print('form is valid? ' + str(form.is_valid()))    
         if form.is_valid():
             user = form.get_user()
-            profile = Profile.objects.get(user=user)
             login(request, user)
-            cities = City.objects.all()
-            posts = Post.objects.filter(user=request.user.id)
-            context = {
-                'cities': cities,
-                'user': user,
-                'posts': posts,
-                'profile': profile,
-                'hidden': "hidden"
-            }
-            return render(request, 'profile.html', context)
-        print('form is valid? ' + str(form.is_valid()))    
+            print('form is valid? ' + str(form.is_valid()))    
+            return redirect('profile')
         return redirect('login_page')
-
     else:
         print('Else block')
         form = AuthenticationForm()
@@ -62,7 +52,6 @@ def signup(request):
     print('signup block')
     if request.method == 'POST':
         print('in POST block')
-        # form = UserCreationForm(request.POST)
         form = SignUpForm(request.POST)
         if form.is_valid():
             print('Form is valid')
@@ -89,8 +78,6 @@ def signup(request):
             message = render_to_string('welcome_email.html', {
                 'user': user,
                 'domain': current_site.domain,
-                # 'uid':urlsafe_base64_encode(force_bytes(user.pk)),
-                # 'token':account_activation_token.make_token(user),
             })
             to_email = form.cleaned_data.get('email')
             email = EmailMessage(
@@ -99,8 +86,6 @@ def signup(request):
             email.send()
             # end auto emailing setup section
             return render(request, 'profile.html', context)
-        print('Form is NOT valid')
-        print(form.errors)
         return redirect('signup')
     else:
         print('signup else BLOCK')
