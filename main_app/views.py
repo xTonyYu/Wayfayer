@@ -7,11 +7,9 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_text
-# from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.template.loader import render_to_string
 from django.core.mail import EmailMessage
 
-# from .tokens import account_activation_token
 from .models import * 
 from .forms import *
 
@@ -31,15 +29,12 @@ def about(request):
 def login_page(request):
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
-        print('form is valid? ' + str(form.is_valid()))    
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            print('form is valid? ' + str(form.is_valid()))    
             return redirect('profile')
         return redirect('login_page')
     else:
-        print('Else block')
         form = AuthenticationForm()
         context = {
             'hidden': "",
@@ -49,13 +44,9 @@ def login_page(request):
         return render(request, 'home.html', context)
 
 def signup(request):
-    print('signup block')
     if request.method == 'POST':
-        print('in POST block')
         form = SignUpForm(request.POST)
         if form.is_valid():
-            print('Form is valid')
-            print(form.cleaned_data.get('email'))
             user = form.save(commit=False)
             user.email = form.cleaned_data.get('email')
             user.save()
@@ -88,7 +79,6 @@ def signup(request):
             return render(request, 'profile.html', context)
         return redirect('signup')
     else:
-        print('signup else BLOCK')
         # form = UserCreationForm()
         form = SignUpForm()
         context = {
@@ -290,7 +280,6 @@ def editpost(request, city_id, post_id):
         context['hidden'] = ""
         context['showform'] = ""
         context['formType'] = 'editpost'
-    print('********** editpost')
     return render(request, 'show_city.html', context)
 
 @login_required
